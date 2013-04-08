@@ -9,7 +9,6 @@
 #import "ViewController.h"
 
 @interface ViewController ()
-
 @end
 
 @implementation ViewController
@@ -18,16 +17,25 @@ UIImage *guuImage;
 UIImage *chokiImage;
 UIImage *paaImage;
 
+NSArray *jankenMap;
+NSArray *guuMap;
+NSArray *chokiMap;
+NSArray *paaMap;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
     self.retry.hidden = YES;
     self.aiteImage.hidden = YES;
     self.resultMessage.text = @"";
     guuImage = [UIImage imageNamed:@"guu.png"];
     chokiImage = [UIImage imageNamed:@"choki.png"];
     paaImage = [UIImage imageNamed:@"paa.png"];
+
+    guuMap = @[@"", @"あいこで……！", @"勝ち！", @"負け！"];
+    chokiMap = @[@"", @"負け！", @"あいこで……！", @"勝ち！"];
+    paaMap = @[@"", @"勝ち！", @"負け！", @"あいこで……！"];
+    jankenMap = @[@"", guuMap, chokiMap, paaMap];
 
     [self.resultMessage setFont:[UIFont boldSystemFontOfSize:24.0f]];
     [self.resultMessage setTextColor:[UIColor blackColor]];
@@ -36,7 +44,6 @@ UIImage *paaImage;
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (IBAction)btnGuu:(id)sender {
@@ -45,25 +52,14 @@ UIImage *paaImage;
     self.paa.hidden = YES;
     self.aiteImage.hidden = NO;
     
-    NSInteger aite = arc4random() % 3;
-    if (aite == 1) {
+    NSInteger aite = 1 + arc4random() % 3;
+    [self janken: GUU andAite: aite];
+    if (aite == GUU) {
         [self.aiteImage setImage:guuImage];
-        self.resultMessage.text = @"あいこで……！";
-        self.guu.hidden = NO;
-        self.choki.hidden = NO;
-        self.paa.hidden = NO;
-        self.retry.hidden = YES;
-        [self.resultMessage setTextColor:[UIColor blackColor]];
-    } else if (aite == 2) {
+    } else if (aite == CHOKI) {
         [self.aiteImage setImage:chokiImage];
-        self.resultMessage.text = @"あなたの勝ちですよっ！";
-        self.retry.hidden = NO;
-        [self.resultMessage setTextColor:[UIColor blueColor]];
-    } else {
+    } else if (aite == PAA) {
         [self.aiteImage setImage:paaImage];
-        self.resultMessage.text = @"あなたの負けですねー！";
-        self.retry.hidden = NO;
-        [self.resultMessage setTextColor:[UIColor redColor]];
     }
 }
 
@@ -74,25 +70,14 @@ UIImage *paaImage;
     self.aiteImage.hidden = NO;
 
     
-    NSInteger aite = arc4random() % 3;
-    if (aite == 1) {
+    NSInteger aite = 1 + arc4random() % 3;
+    [self janken: CHOKI andAite: aite];
+    if (aite == GUU) {
         [self.aiteImage setImage:guuImage];
-        self.resultMessage.text = @"あなたの負けですねー！";
-        [self.resultMessage setTextColor:[UIColor redColor]];
-        self.retry.hidden = NO;
-    } else if (aite == 2) {
+    } else if (aite == CHOKI) {
         [self.aiteImage setImage:chokiImage];
-        self.resultMessage.text = @"あいこで……！";
-        [self.resultMessage setTextColor:[UIColor blackColor]];
-        self.guu.hidden = NO;
-        self.choki.hidden = NO;
-        self.paa.hidden = NO;
-        self.retry.hidden = YES;
-    } else {
+    } else if (aite == PAA) {
         [self.aiteImage setImage:paaImage];
-        self.resultMessage.text = @"あなたの勝ちですよっ！";
-        [self.resultMessage setTextColor:[UIColor blueColor]];
-        self.retry.hidden = NO;
     }
 }
 
@@ -102,25 +87,14 @@ UIImage *paaImage;
     self.choki.hidden = YES;
     self.aiteImage.hidden = NO;
     
-    NSInteger aite = arc4random() % 3;
-    if (aite == 1) {
+    NSInteger aite = 1 + arc4random() % 3;
+    [self janken: PAA andAite: aite];
+    if (aite == GUU) {
         [self.aiteImage setImage:guuImage];
-        self.resultMessage.text = @"あなたの勝ちですよっ！";
-        [self.resultMessage setTextColor:[UIColor blueColor]];
-        self.retry.hidden = NO;
-    } else if (aite == 2) {
+    } else if (aite == CHOKI) {
         [self.aiteImage setImage:chokiImage];
-        self.resultMessage.text = @"あなたの負けですねー！";
-        [self.resultMessage setTextColor:[UIColor redColor]];
-        self.retry.hidden = NO;
-    } else {
+    } else if (aite == PAA) {
         [self.aiteImage setImage:paaImage];
-        self.resultMessage.text = @"あいこで……！";
-        [self.resultMessage setTextColor:[UIColor blackColor]];
-        self.guu.hidden = NO;
-        self.choki.hidden = NO;
-        self.paa.hidden = NO;
-        self.retry.hidden = YES;
     }
 }
 
@@ -135,4 +109,27 @@ UIImage *paaImage;
     self.paa.hidden = NO;
     
 }
+
+- (void) janken: (int) jibun andAite: (int) aite
+{
+    id msg = jankenMap[jibun][aite];
+    self.resultMessage.text = msg;
+
+    if (jibun == aite) {
+        [self.resultMessage setTextColor:[UIColor blackColor]];
+        self.guu.hidden = NO;
+        self.choki.hidden = NO;
+        self.paa.hidden = NO;
+        self.retry.hidden = YES;
+    } else {
+        self.retry.hidden = NO;
+        if ([msg isEqual: @"勝ち！"]){
+            [self.resultMessage setTextColor:[UIColor blueColor]];
+        } else {
+            [self.resultMessage setTextColor:[UIColor redColor]];
+        }
+
+    }
+}
+
 @end

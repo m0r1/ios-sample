@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+#define GUU 1
+#define CHOKI 2
+#define PAA 3
+
 @interface ViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UILabel *resultMessage;
@@ -24,5 +28,7 @@
 - (IBAction)btnChoki:(id)sender;
 - (IBAction)btnPaa:(id)sender;
 - (IBAction)btnRetry:(id)sender;
+
+- (void) janken: (int) jibun andAite: (int) aite;
 
 @end
